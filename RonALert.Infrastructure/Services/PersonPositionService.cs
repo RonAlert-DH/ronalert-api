@@ -62,7 +62,7 @@ namespace RonALert.Infrastructure.Services
             CancellationToken ct = default)
         {
             var timestamp = (await _repository.PersonPositions
-                .OrderByDescending(x => x.Timestamp).FirstAsync(ct)).Timestamp;
+                .OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync(ct)).Timestamp;
 
             return await _repository.PersonPositions
                 .Where(x => x.Room == room && x.Timestamp == timestamp)

@@ -97,7 +97,8 @@ namespace RonALert.API.Controllers
         [Route("{id}/alarms")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<List<Room>>> RoomAlarms(Guid id, CancellationToken ct = default)
+        public async Task<ActionResult<List<Room>>> RoomAlarms(Guid id, [FromQuery] bool openOnly = false,
+            CancellationToken ct = default)
         {
             try
             {
@@ -106,7 +107,9 @@ namespace RonALert.API.Controllers
                 if (room.IsNull())
                     return NotFound();
 
-                var roomAlarms = await _alarmService.GetAlarmsForRoomAsync(room, ct);
+                var roomAlarms = openOnly ? 
+                    await _alarmService.GetAlarmsByStatusForRoomAsync(room, Core.Shared.Enums.AlarmStatus.Open, ct) :
+                    await _alarmService.GetAlarmsForRoomAsync(room, ct);
 
                 return Ok(roomAlarms);
             }

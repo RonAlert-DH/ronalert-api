@@ -23,6 +23,9 @@ namespace RonALert.Infrastructure.Services
         Task<List<Alarm>> GetAlarmsForRoomAsync(Room room,
             CancellationToken ct = default);
 
+        Task<List<Alarm>> GetAlarmsByStatusForRoomAsync(Room room,
+            AlarmStatus status, CancellationToken ct = default);
+
         Task CheckAlarmsAsync(Room room, List<PersonDTO> people,
             CancellationToken ct = default);
     }
@@ -106,7 +109,7 @@ namespace RonALert.Infrastructure.Services
         private async Task HandlePeopleTooCloseAlarms(Room room, List<PersonDTO> people,
             List<Alarm> activeAlarms, CancellationToken ct = default)
         {
-            if (people.Any(x => x.NearestDistance < 150))
+            if (people.Any(x => x.NearestDistance < 200))
             {
                 if (!activeAlarms.Any(x => x.Type == AlarmType.PeopleTooClose))
                 {
@@ -125,10 +128,40 @@ namespace RonALert.Infrastructure.Services
             {
                 if (activeAlarms.Any(x => x.Type == AlarmType.PeopleTooClose))
                 {
-                    var faceMaskAlarm = activeAlarms.FirstOrDefault(x => x.Type == AlarmType.PeopleTooClose);
-                    faceMaskAlarm.Status = AlarmStatus.Closed;
+                    var peopleTooCloseAlarm = activeAlarms.FirstOrDefault(x => x.Type == AlarmType.PeopleTooClose);
+                    peopleTooCloseAlarm.Status = AlarmStatus.Closed;
 
-                    await UpdateAlarmAsync(faceMaskAlarm, ct);
+                    await UpdateAlarmAsync(peopleTooCloseAlarm, ct);
+                }
+            }
+        }
+
+        private async Task HandleTooManyPeopleAlarms(Room room, List<PersonDTO> people,
+            List<Alarm> activeAlarms, CancellationToken ct = default)
+        {
+            if (people.Count > room.PeopleLimit)
+            {
+                if (!activeAlarms.Any(x => x.Type == AlarmType.TooManyPeople))
+                {
+                    var faceMaskAlarm = new Alarm()
+                    {
+                        Room = room,
+                        Type = AlarmType.TooManyPeople,
+                        Status = AlarmStatus.Open
+                    };
+
+                    await AddAlarmAsync(faceMaskAlarm, ct);
+                    //await _notificationsService.SendNotificationAsync($"lalaland alarm opened {faceMaskAlarm.Type}");
+                }
+            }
+            else
+            {
+                if (activeAlarms.Any(x => x.Type == AlarmType.TooManyPeople))
+                {
+                    var tooManyPeopleAlarm = activeAlarms.FirstOrDefault(x => x.Type == AlarmType.TooManyPeople);
+                    tooManyPeopleAlarm.Status = AlarmStatus.Closed;
+
+                    await UpdateAlarmAsync(tooManyPeopleAlarm, ct);
                 }
             }
         }
