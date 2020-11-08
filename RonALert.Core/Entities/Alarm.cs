@@ -9,5 +9,6 @@ namespace RonALert.Core.Entities
     {
         public Room Room { get; set; }
         public AlarmType Type { get; set; }
+        public AlarmStatus Status { get; set; }
     }
 }

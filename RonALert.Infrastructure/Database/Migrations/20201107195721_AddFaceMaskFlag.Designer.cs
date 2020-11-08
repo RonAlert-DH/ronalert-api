@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RonALert.Infrastructure.Database;
 
 namespace RonALert.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20201107195721_AddFaceMaskFlag")]
+    partial class AddFaceMaskFlag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,9 +32,6 @@ namespace RonALert.Infrastructure.Database.Migrations
 
                     b.Property<Guid?>("RoomId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -58,9 +57,6 @@ namespace RonALert.Infrastructure.Database.Migrations
 
                     b.Property<bool>("FaceMask")
                         .HasColumnType("bit");
-
-                    b.Property<double>("NearestDistance")
-                        .HasColumnType("float");
 
                     b.Property<double>("PositionX")
                         .HasColumnType("float");

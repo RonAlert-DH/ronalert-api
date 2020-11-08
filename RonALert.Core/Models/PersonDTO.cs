@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RonALert.Core.Entities
+namespace RonALert.Core.Models
 {
-    public class PersonPosition : EntityBase
+    public class PersonDTO
     {
-        public Room Room { get; set; }
-        public DateTime Timestamp { get; set; }
+        public bool FaceMask { get; set; }
         public double PositionX { get; set; }
         public double PositionY { get; set; }
         public double NearestDistance { get; set; }
-        public bool FaceMask { get; set; }
     }
 }

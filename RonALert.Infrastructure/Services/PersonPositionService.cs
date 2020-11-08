@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RonALert.Core.Entities;
+using RonALert.Core.Models;
 using RonALert.Infrastructure.Database;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,9 @@ namespace RonALert.Infrastructure.Services
 
         Task AddPersonPositionAsync(PersonPosition personPosition,
             CancellationToken ct = default);
+
+        Task AddPeoplePositionsAsync(Room room, List<PersonDTO> people,
+            DateTime timestamp, CancellationToken ct = default);
     }
 
     public class PersonPositionService : IPersonPositionService
@@ -28,6 +32,25 @@ namespace RonALert.Infrastructure.Services
             _repository = repository;
         }
 
+        public async Task AddPeoplePositionsAsync(Room room, List<PersonDTO> people, 
+            DateTime timestamp, CancellationToken ct = default)
+        {
+            foreach(var person in people)
+            {
+                var personPosition = new PersonPosition()
+                {
+                    Room = room,
+                    PositionX = person.PositionX,
+                    PositionY = person.PositionY,
+                    FaceMask = person.FaceMask,
+                    NearestDistance = person.NearestDistance,
+                    Timestamp = timestamp,
+                };
+
+                await AddPersonPositionAsync(personPosition, ct);
+            }
+        }
+
         public async Task AddPersonPositionAsync(PersonPosition personPosition,
             CancellationToken ct = default)
         {
@@ -36,9 +59,15 @@ namespace RonALert.Infrastructure.Services
         }
 
         public async Task<List<PersonPosition>> GetPersonPositionsForRoomAsnyc(Room room,
-            CancellationToken ct = default) =>
-            await _repository.PersonPositions
-                .Where(x => x.Room == room)
+            CancellationToken ct = default)
+        {
+            var timestamp = (await _repository.PersonPositions
+                .OrderByDescending(x => x.Timestamp).FirstAsync(ct)).Timestamp;
+
+            return await _repository.PersonPositions
+                .Where(x => x.Room == room && x.Timestamp == timestamp)
                 .ToListAsync(ct);
+        }
+
     }
 }

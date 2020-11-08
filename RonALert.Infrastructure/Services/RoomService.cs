@@ -13,6 +13,7 @@ namespace RonALert.Infrastructure.Services
     public interface IRoomService
     {
         Task<List<Room>> GetRoomsAsync(CancellationToken ct = default);
+        Task<Room> GetRoomByIdAsync(Guid id, CancellationToken ct = default);
     }
 
     public class RoomService : IRoomService
@@ -26,5 +27,8 @@ namespace RonALert.Infrastructure.Services
 
         public async Task<List<Room>> GetRoomsAsync(CancellationToken ct = default) =>
             await _repository.Rooms.ToListAsync(ct);
+
+        public async Task<Room> GetRoomByIdAsync(Guid id, CancellationToken ct = default) =>
+            await _repository.Rooms.FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 }

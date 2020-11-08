@@ -9,4 +9,10 @@ namespace RonALert.Core.Shared.Enums
         NoFaceMask = 1,
         PeopleTooClose = 2
     }
+
+    public enum AlarmStatus
+    {
+        Open = 1,
+        Closed = 2
+    }
 }

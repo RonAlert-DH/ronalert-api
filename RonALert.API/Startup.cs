@@ -28,9 +28,9 @@ namespace RonaALert.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var conn = Configuration.GetConnectionString("SqlConnection");
-            services.ConfigureSqlRepository(conn);
+            services.ConfigureSqlRepository(Configuration.GetConnectionString("SqlConnection"));
             services.ConfigureServices();
+            services.ConfigureNotifications("", "", "");
 
             services.AddControllers();
 
